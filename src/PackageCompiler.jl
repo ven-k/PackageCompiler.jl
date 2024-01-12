@@ -221,7 +221,7 @@ function rewrite_sysimg_jl_only_needed_stdlibs(stdlibs::Vector{String})
 end
 
 function create_fresh_base_sysimage(stdlibs::Vector{String}; cpu_target::String, sysimage_build_args::Cmd)
-    tmp = mktempdir()
+    tmp = mktempdir(; prefix="jl_pkgcmp_fresh_object_", cleanup = false)
     sysimg_source_path = Base.find_source_file("sysimg.jl")
     base_dir = dirname(sysimg_source_path)
     tmp_corecompiler_ji = joinpath(tmp, "corecompiler.ji")
@@ -640,7 +640,7 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
         if julia_init_c_file isa String
             julia_init_c_file = [julia_init_c_file]
         end
-        mktempdir() do include_dir
+        mktempdir(; prefix="jl_packagecompiler_object_", cleanup = false) do include_dir
             if julia_init_h_file !== nothing
                 if julia_init_h_file isa String
                     julia_init_h_file = [julia_init_h_file]
@@ -1163,7 +1163,7 @@ function create_sysimage_workaround(
     project = dirname(ctx.env.project_file)
 
     if !incremental
-        tmp = mktempdir()
+        tmp = mktempdir(; prefix="jl_pkgcmp_workaround", cleanup = false)
         base_sysimage = joinpath(tmp, "tmp_sys." * Libdl.dlext)
         create_sysimage(String[]; sysimage_path=base_sysimage, project,
                         incremental=false, filter_stdlibs, cpu_target)
