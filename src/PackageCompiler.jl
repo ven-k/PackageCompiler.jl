@@ -222,6 +222,7 @@ end
 
 function create_fresh_base_sysimage(stdlibs::Vector{String}; cpu_target::String, sysimage_build_args::Cmd)
     tmp = mktempdir(; prefix="jl_pkgcmp_fresh_object_", cleanup = false)
+    @info "Fresh object $tmp"
     sysimg_source_path = Base.find_source_file("sysimg.jl")
     base_dir = dirname(sysimg_source_path)
     tmp_corecompiler_ji = joinpath(tmp, "corecompiler.ji")
@@ -295,6 +296,7 @@ end
 
 function run_precompilation_script(project::String, sysimg::String, precompile_file::Union{String, Nothing}, precompile_dir::String)
     tracefile, io = mktemp(precompile_dir; cleanup=false)
+    @info "MkTemp $tracefile, $io"
     close(io)
     arg = precompile_file === nothing ? `-e ''` : `$precompile_file`
     cmd = `$(get_julia_cmd()) --sysimage=$(sysimg) --compile=all --trace-compile=$tracefile $arg`
@@ -340,6 +342,7 @@ function create_sysimg_object_file(object_file::String,
     precompile_files = String[]
     @debug "running precompilation execution script..."
     precompile_dir = mktempdir(; prefix="jl_packagecompiler_", cleanup=false)
+    @info "Precompile Dir $precompile_dir"
     for file in (isempty(precompile_execution_file) ? (nothing,) : precompile_execution_file)
         tracefile = run_precompilation_script(project, base_sysimage, file, precompile_dir)
         push!(precompile_files, tracefile)
@@ -640,7 +643,7 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
         if julia_init_c_file isa String
             julia_init_c_file = [julia_init_c_file]
         end
-        mktempdir(; prefix="jl_packagecompiler_object_", cleanup = false) do include_dir
+        mktempdir(; prefix="jl_pkgcmp_object_", cleanup = false) do include_dir
             if julia_init_h_file !== nothing
                 if julia_init_h_file isa String
                     julia_init_h_file = [julia_init_h_file]
