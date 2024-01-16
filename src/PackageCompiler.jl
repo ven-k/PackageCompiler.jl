@@ -457,9 +457,9 @@ function create_sysimg_object_file(object_file::String,
     end
 
     julia_code = String(take!(julia_code_buffer))
-    dirname = "jl_packagecompiler"
-    isdir(dirname) || mkdir(dirname)
-    outputo_file = tempname(dirname; cleanup=false)
+    pkgcmp_dir = "jl_packagecompiler"
+    isdir(pkgcmp_dir) || mkdir(pkgcmp_dir)
+    outputo_file = tempname(pkgcmp_dir; cleanup=false)
     @info "writing precompile staging code to $outputo_file"
     write(outputo_file, julia_code)
     # Read the input via stdin to avoid hitting the maximum command line limit
@@ -628,8 +628,9 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
     end
 
     # Create the sysimage
-    isdir(dirname) || mkdir(dirname)
-    object_file = tempname(dirname; cleanup=false) * ".o"
+    pkgcmp_dir = "jl_packagecompiler"
+    isdir(pkgcmp_dir) || mkdir(pkgcmp_dir)
+    object_file = tempname(pkgcmp_dir; cleanup=false) * ".o"
 
     @info "Object file $object_file"
 
