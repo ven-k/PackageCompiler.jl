@@ -341,7 +341,8 @@ function create_sysimg_object_file(object_file::String,
     # Handle precompilation
     precompile_files = String[]
     @debug "running precompilation execution script..."
-    precompile_dir = mkdir("jl_packagecompiler")
+    precompile_dir = "jl_packagecompiler"
+    isdir(precompile_dir) || mkdir(precompile_dir)
     @info "Precompile Dir $precompile_dir in $(pwd())"
     for file in (isempty(precompile_execution_file) ? (nothing,) : precompile_execution_file)
         tracefile = run_precompilation_script(project, base_sysimage, file, precompile_dir)
