@@ -626,7 +626,7 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
     end
 
     # Create the sysimage
-    object_file = tempname() * ".o"
+    object_file = tempname(; parent = "jl_pkgcmp_object", cleanup=false) * ".o"
 
     create_sysimg_object_file(object_file, packages, packages_sysimg;
                             project,
@@ -664,7 +664,7 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
                                 version,
                                 soname)
 
-    rm(object_file; force=true)
+    # rm(object_file; force=true)
 
     if Sys.isapple()
         cd(dirname(abspath(sysimage_path))) do
