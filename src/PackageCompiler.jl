@@ -457,8 +457,8 @@ function create_sysimg_object_file(object_file::String,
     end
 
     julia_code = String(take!(julia_code_buffer))
-    outputo_file = tempname()
-    @debug "writing precompile staging code to $outputo_file"
+    outputo_file = tempname(; parent="jl_packagecompiler", cleanup=false)
+    @info "writing precompile staging code to $outputo_file"
     write(outputo_file, julia_code)
     # Read the input via stdin to avoid hitting the maximum command line limit
 
@@ -626,7 +626,7 @@ function create_sysimage(packages::Union{Nothing, Symbol, Vector{String}, Vector
     end
 
     # Create the sysimage
-    object_file = tempname(; parent = "jl_pkgcmp_object", cleanup=false) * ".o"
+    object_file = tempname(; parent = "jl_packagecompiler", cleanup=false) * ".o"
 
     create_sysimg_object_file(object_file, packages, packages_sysimg;
                             project,
