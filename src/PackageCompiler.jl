@@ -459,17 +459,8 @@ function create_sysimg_object_file(object_file::String,
     write(outputo_file, julia_code)
     # Read the input via stdin to avoid hitting the maximum command line limit
 
-    julia_import_buffer = IOBuffer()
-    for pkg in packages
-        print(julia_import_buffer, """
-            import $pkg
-            """)
-    end
-    julia_code = String(take!(julia_import_buffer))
-    import_file = tempname() * ".jl"
-    write(import_file, julia_code)
-    @info "Ensure all packages can be imported"
-    cmd = `$(get_julia_cmd()) --project=$project $import_file`
+    @debug "Ensure all packages can be imported"
+    cmd = `$(get_julia_cmd()) --project=$project --eval 'using Pkg; Pkg.precompile()'`
     run(cmd)
 
         cmd = `$(get_julia_cmd()) --cpu-target=$cpu_target $sysimage_build_args
@@ -1434,7 +1425,7 @@ function bundle_julia_libexec(ctx, dest_dir)
     p7zip_exe = basename(p7zip_path)
     cp(p7zip_path, joinpath(bundle_libexec_dir, p7zip_exe))
 
-    return 
+    return
 end
 
 function recursive_dir_size(path)
