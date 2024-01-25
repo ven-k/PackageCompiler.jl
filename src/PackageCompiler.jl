@@ -459,6 +459,19 @@ function create_sysimg_object_file(object_file::String,
     write(outputo_file, julia_code)
     # Read the input via stdin to avoid hitting the maximum command line limit
 
+    julia_import_buffer = IOBuffer()
+    for pkg in packages
+        print(julia_import_buffer, """
+            import $pkg
+            """)
+    end
+    julia_code = String(take!(julia_import_buffer))
+    import_file = tempname() * ".jl"
+    write(import_file, julia_code)
+    @info "Ensure all packages can be imported"
+    cmd = `$(get_julia_cmd()) --project=$project $import_file`
+    run(cmd)
+
         cmd = `$(get_julia_cmd()) --cpu-target=$cpu_target $sysimage_build_args
             --sysimage=$base_sysimage --project=$project --output-o=$(object_file)
             $outputo_file`
