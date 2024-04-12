@@ -421,6 +421,7 @@ function create_sysimg_object_file(object_file::String,
     # Make packages available in Main. It is unclear if this is the right thing to do.
     for pkg in packages
         print(julia_code_buffer, """
+            @info "Impoting $pkg"
             import $pkg
             """)
     end
