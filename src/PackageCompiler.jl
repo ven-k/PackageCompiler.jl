@@ -204,7 +204,7 @@ function get_julia_cmd()
     julia_path = joinpath(Sys.BINDIR, Base.julia_exename())
     color = Base.have_color === nothing ? "auto" : Base.have_color ? "yes" : "no"
     if isdefined(Base, :Linking) # pkgimage support feature flag
-        `$julia_path --color=$color --startup-file=no --pkgimages=no`
+        `$julia_path --color=$color --startup-file=no --pkgimages=$(get(ENV, "JULIA_PKGIMAGES", "no"))`
     else
         `$julia_path --color=$color --startup-file=no`
     end
